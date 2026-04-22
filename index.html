@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinic Patient Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush: #F2C7C7;
+    --white: #FFFFFF;
+    --mint: #D5F3D8;
+    --rose: #FFB7C5;
+    --deep-rose: #e8929f;
+    --text: #3a2a2e;
+    --text-light: #8a6a70;
+    --border: #f0d8db;
+    --shadow: rgba(242,199,199,0.4);
+  }
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: ‘Sarabun’, sans-serif;
+background: linear-gradient(135deg, #fdf0f0 0%, #f9fdf9 50%, #fff5f7 100%);
+min-height: 100vh;
+color: var(–text);
+}
+
+/* Petal decorations */
+body::before {
+content: ‘’;
+position: fixed;
+top: -80px; right: -80px;
+width: 300px; height: 300px;
+background: radial-gradient(circle, rgba(255,183,197,0.3) 0%, transparent 70%);
+border-radius: 50%;
+pointer-events: none;
+z-index: 0;
+}
+
+body::after {
+content: ‘’;
+position: fixed;
+bottom: -100px; left: -100px;
+width: 350px; height: 350px;
+background: radial-gradient(circle, rgba(213,243,216,0.35) 0%, transparent 70%);
+border-radius: 50%;
+pointer-events: none;
+z-index: 0;
+}
+
+.app {
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+position: relative;
+z-index: 1;
+}
+
+/* Header */
+.header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 24px 32px;
+background: rgba(255,255,255,0.85);
+backdrop-filter: blur(12px);
+border-radius: 24px;
+border: 1.5px solid var(–border);
+box-shadow: 0 8px 32px var(–shadow);
+margin-bottom: 24px;
+}
+
+.header-left {
+display: flex;
+align-items: center;
+gap: 16px;
+}
+
+.logo-flower {
+font-size: 36px;
+animation: sway 3s ease-in-out infinite;
+}
+
+@keyframes sway {
+0%, 100% { transform: rotate(-5deg); }
+50% { transform: rotate(5deg); }
+}
+
+.header h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: 24px;
+color: var(–text);
+letter-spacing: 0.5px;
+}
+
+.header h1 span {
+display: block;
+font-size: 13px;
+font-family: ‘Sarabun’, sans-serif;
+font-weight: 400;
+color: var(–text-light);
+letter-spacing: 1px;
+}
+
+.btn-add {
+background: linear-gradient(135deg, var(–rose), var(–deep-rose));
+color: white;
+border: none;
+padding: 12px 24px;
+border-radius: 50px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+box-shadow: 0 4px 16px rgba(255,183,197,0.5);
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.btn-add:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(255,183,197,0.6);
+}
+
+/* Stats bar */
+.stats {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 16px;
+margin-bottom: 24px;
+}
+
+.stat-card {
+background: rgba(255,255,255,0.8);
+border: 1.5px solid var(–border);
+border-radius: 18px;
+padding: 20px 24px;
+text-align: center;
+backdrop-filter: blur(8px);
+box-shadow: 0 4px 16px var(–shadow);
+transition: transform 0.2s;
+}
+
+.stat-card:hover { transform: translateY(-3px); }
+
+.stat-card .num {
+font-family: ‘Playfair Display’, serif;
+font-size: 32px;
+color: var(–deep-rose);
+}
+
+.stat-card .label {
+font-size: 12px;
+color: var(–text-light);
+margin-top: 4px;
+letter-spacing: 0.5px;
+}
+
+/* Controls */
+.controls {
+display: flex;
+gap: 12px;
+margin-bottom: 20px;
+flex-wrap: wrap;
+align-items: center;
+}
+
+.search-wrap {
+flex: 1;
+min-width: 240px;
+position: relative;
+}
+
+.search-wrap input {
+width: 100%;
+padding: 12px 16px 12px 44px;
+border: 1.5px solid var(–border);
+border-radius: 50px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+background: rgba(255,255,255,0.9);
+color: var(–text);
+outline: none;
+transition: all 0.3s;
+box-shadow: 0 2px 8px var(–shadow);
+}
+
+.search-wrap input:focus {
+border-color: var(–rose);
+box-shadow: 0 4px 16px rgba(255,183,197,0.3);
+}
+
+.search-icon {
+position: absolute;
+left: 16px;
+top: 50%;
+transform: translateY(-50%);
+color: var(–text-light);
+font-size: 16px;
+}
+
+.filter-btn {
+padding: 12px 20px;
+border: 1.5px solid var(–border);
+border-radius: 50px;
+background: rgba(255,255,255,0.9);
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+cursor: pointer;
+color: var(–text-light);
+transition: all 0.2s;
+}
+
+.filter-btn.active, .filter-btn:hover {
+border-color: var(–rose);
+color: var(–deep-rose);
+background: rgba(255,183,197,0.1);
+}
+
+.upload-btn {
+padding: 12px 20px;
+border: 1.5px dashed var(–rose);
+border-radius: 50px;
+background: rgba(255,183,197,0.08);
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+cursor: pointer;
+color: var(–deep-rose);
+transition: all 0.2s;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.upload-btn:hover {
+background: rgba(255,183,197,0.18);
+}
+
+/* Patient list */
+.patient-grid {
+display: grid;
+gap: 14px;
+}
+
+.patient-card {
+background: rgba(255,255,255,0.85);
+border: 1.5px solid var(–border);
+border-radius: 20px;
+padding: 20px 24px;
+display: grid;
+grid-template-columns: auto 1fr auto;
+gap: 16px;
+align-items: center;
+backdrop-filter: blur(8px);
+box-shadow: 0 4px 16px var(–shadow);
+cursor: pointer;
+transition: all 0.25s;
+animation: fadeIn 0.4s ease both;
+}
+
+.patient-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 28px rgba(255,183,197,0.35);
+border-color: var(–rose);
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.avatar {
+width: 52px; height: 52px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(–blush), var(–rose));
+display: flex; align-items: center; justify-content: center;
+font-size: 20px;
+font-family: ‘Playfair Display’, serif;
+color: white;
+font-weight: 700;
+flex-shrink: 0;
+box-shadow: 0 4px 12px rgba(255,183,197,0.4);
+}
+
+.patient-info h3 {
+font-family: ‘Playfair Display’, serif;
+font-size: 16px;
+color: var(–text);
+margin-bottom: 4px;
+}
+
+.patient-info .meta {
+font-size: 13px;
+color: var(–text-light);
+display: flex;
+gap: 14px;
+flex-wrap: wrap;
+}
+
+.badge {
+display: inline-block;
+padding: 2px 10px;
+border-radius: 20px;
+font-size: 11px;
+font-weight: 600;
+}
+
+.badge-th { background: rgba(213,243,216,0.6); color: #3a7a44; }
+.badge-int { background: rgba(255,183,197,0.4); color: #a0435a; }
+
+.patient-right {
+text-align: right;
+flex-shrink: 0;
+}
+
+.patient-right .last-visit {
+font-size: 12px;
+color: var(–text-light);
+}
+
+.patient-right .treatment-count {
+font-size: 22px;
+font-family: ‘Playfair Display’, serif;
+color: var(–deep-rose);
+}
+
+.patient-right .treatment-label {
+font-size: 11px;
+color: var(–text-light);
+}
+
+/* Modal */
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(58,42,46,0.35);
+backdrop-filter: blur(6px);
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+animation: overlayIn 0.3s ease;
+}
+
+@keyframes overlayIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
+.modal {
+background: linear-gradient(160deg, #fffafa 0%, #f9fdf9 100%);
+border-radius: 28px;
+padding: 32px;
+width: 100%;
+max-width: 640px;
+max-height: 90vh;
+overflow-y: auto;
+box-shadow: 0 24px 80px rgba(58,42,46,0.2);
+border: 1.5px solid var(–border);
+animation: modalIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+@keyframes modalIn {
+from { opacity: 0; transform: scale(0.88) translateY(20px); }
+to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 24px;
+padding-bottom: 16px;
+border-bottom: 1.5px solid var(–border);
+}
+
+.modal-header h2 {
+font-family: ‘Playfair Display’, serif;
+font-size: 22px;
+color: var(–text);
+}
+
+.close-btn {
+width: 36px; height: 36px;
+border-radius: 50%;
+border: 1.5px solid var(–border);
+background: white;
+cursor: pointer;
+font-size: 18px;
+display: flex; align-items: center; justify-content: center;
+color: var(–text-light);
+transition: all 0.2s;
+}
+
+.close-btn:hover { border-color: var(–rose); color: var(–deep-rose); }
+
+.form-section {
+margin-bottom: 20px;
+}
+
+.section-title {
+font-size: 12px;
+font-weight: 600;
+color: var(–deep-rose);
+letter-spacing: 1.5px;
+text-transform: uppercase;
+margin-bottom: 12px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.section-title::after {
+content: ‘’;
+flex: 1;
+height: 1px;
+background: var(–border);
+}
+
+.form-row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 12px;
+}
+
+.form-row.single { grid-template-columns: 1fr; }
+
+.form-group {
+display: flex;
+flex-direction: column;
+gap: 6px;
+}
+
+.form-group label {
+font-size: 12px;
+font-weight: 600;
+color: var(–text-light);
+letter-spacing: 0.3px;
+}
+
+.form-group input, .form-group select {
+padding: 10px 14px;
+border: 1.5px solid var(–border);
+border-radius: 12px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+background: rgba(255,255,255,0.9);
+color: var(–text);
+outline: none;
+transition: all 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+border-color: var(–rose);
+box-shadow: 0 2px 12px rgba(255,183,197,0.25);
+}
+
+/* Toggle nationality */
+.nationality-toggle {
+display: flex;
+gap: 10px;
+margin-bottom: 16px;
+}
+
+.nat-btn {
+flex: 1;
+padding: 10px;
+border: 1.5px solid var(–border);
+border-radius: 12px;
+background: white;
+cursor: pointer;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 13px;
+font-weight: 600;
+color: var(–text-light);
+transition: all 0.2s;
+text-align: center;
+}
+
+.nat-btn.active {
+border-color: var(–rose);
+background: rgba(255,183,197,0.15);
+color: var(–deep-rose);
+}
+
+/* Treatments section */
+.treatment-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+
+.treatment-item {
+display: grid;
+grid-template-columns: 1fr 120px 100px auto;
+gap: 10px;
+align-items: center;
+padding: 12px;
+background: rgba(255,183,197,0.06);
+border: 1.5px solid var(–border);
+border-radius: 14px;
+animation: fadeIn 0.3s ease;
+}
+
+.treatment-item input {
+padding: 8px 12px;
+border: 1.5px solid var(–border);
+border-radius: 10px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 13px;
+background: white;
+outline: none;
+}
+
+.treatment-item input:focus { border-color: var(–rose); }
+
+.remove-treatment {
+width: 30px; height: 30px;
+border-radius: 50%;
+border: 1.5px solid #fecdd3;
+background: #fff5f7;
+color: var(–deep-rose);
+cursor: pointer;
+font-size: 14px;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s;
+}
+
+.remove-treatment:hover { background: var(–rose); color: white; }
+
+.btn-add-treatment {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 10px 16px;
+border: 1.5px dashed var(–rose);
+border-radius: 12px;
+background: transparent;
+color: var(–deep-rose);
+font-family: ‘Sarabun’, sans-serif;
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+width: 100%;
+justify-content: center;
+}
+
+.btn-add-treatment:hover { background: rgba(255,183,197,0.12); }
+
+/* Save button */
+.modal-footer {
+display: flex;
+gap: 12px;
+margin-top: 24px;
+padding-top: 20px;
+border-top: 1.5px solid var(–border);
+}
+
+.btn-save {
+flex: 1;
+padding: 14px;
+background: linear-gradient(135deg, var(–rose), var(–deep-rose));
+color: white;
+border: none;
+border-radius: 14px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 15px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+box-shadow: 0 4px 16px rgba(255,183,197,0.5);
+}
+
+.btn-save:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(255,183,197,0.6);
+}
+
+.btn-cancel {
+padding: 14px 24px;
+border: 1.5px solid var(–border);
+border-radius: 14px;
+background: white;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 15px;
+cursor: pointer;
+color: var(–text-light);
+transition: all 0.2s;
+}
+
+.btn-cancel:hover { border-color: var(–rose); color: var(–deep-rose); }
+
+/* Detail view */
+.detail-section { margin-bottom: 20px; }
+
+.detail-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+}
+
+.detail-item { padding: 12px 16px; background: rgba(255,183,197,0.07); border-radius: 12px; border: 1px solid var(–border); }
+
+.detail-item .key { font-size: 11px; font-weight: 600; color: var(–text-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 4px; }
+.detail-item .val { font-size: 15px; color: var(–text); font-weight: 500; }
+
+.treatment-table { width: 100%; border-collapse: collapse; }
+.treatment-table th {
+background: rgba(255,183,197,0.15);
+padding: 10px 14px;
+text-align: left;
+font-size: 12px;
+font-weight: 700;
+color: var(–deep-rose);
+letter-spacing: 0.5px;
+}
+.treatment-table td {
+padding: 10px 14px;
+border-bottom: 1px solid var(–border);
+font-size: 14px;
+color: var(–text);
+}
+.treatment-table tr:last-child td { border-bottom: none; }
+.treatment-table tr:hover td { background: rgba(255,183,197,0.05); }
+
+.total-row {
+display: flex;
+justify-content: space-between;
+padding: 12px 16px;
+background: linear-gradient(135deg, rgba(255,183,197,0.2), rgba(213,243,216,0.2));
+border-radius: 12px;
+font-weight: 700;
+color: var(–text);
+margin-top: 8px;
+border: 1px solid var(–border);
+}
+
+.empty-state {
+text-align: center;
+padding: 60px 20px;
+color: var(–text-light);
+}
+
+.empty-state .emoji { font-size: 56px; margin-bottom: 16px; }
+.empty-state p { font-size: 16px; }
+
+/* Petal pattern */
+.petals {
+position: fixed;
+inset: 0;
+pointer-events: none;
+overflow: hidden;
+z-index: 0;
+}
+
+.petal {
+position: absolute;
+width: 8px; height: 12px;
+background: rgba(255,183,197,0.4);
+border-radius: 50% 0 50% 0;
+animation: falling linear infinite;
+opacity: 0;
+}
+
+@keyframes falling {
+0% { transform: translateY(-20px) rotate(0deg); opacity: 0.7; }
+100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Upload area */
+.upload-area {
+border: 2px dashed var(–rose);
+border-radius: 16px;
+padding: 24px;
+text-align: center;
+background: rgba(255,183,197,0.05);
+cursor: pointer;
+transition: all 0.2s;
+margin-bottom: 16px;
+}
+
+.upload-area:hover { background: rgba(255,183,197,0.12); }
+.upload-area .icon { font-size: 32px; margin-bottom: 8px; }
+.upload-area p { font-size: 13px; color: var(–text-light); }
+.upload-area strong { color: var(–deep-rose); }
+
+/* Action buttons on card */
+.card-actions { display: flex; gap: 8px; }
+
+.icon-btn {
+width: 34px; height: 34px;
+border-radius: 50%;
+border: 1.5px solid var(–border);
+background: white;
+cursor: pointer;
+font-size: 14px;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s;
+color: var(–text-light);
+}
+
+.icon-btn:hover { border-color: var(–rose); color: var(–deep-rose); background: rgba(255,183,197,0.1); }
+.icon-btn.delete:hover { border-color: #f87171; color: #f87171; background: rgba(248,113,113,0.1); }
+
+/* PPT import notification */
+.import-toast {
+position: fixed;
+bottom: 24px; left: 50%;
+transform: translateX(-50%) translateY(100px);
+background: linear-gradient(135deg, var(–rose), var(–deep-rose));
+color: white;
+padding: 14px 24px;
+border-radius: 50px;
+font-size: 14px;
+font-weight: 600;
+z-index: 999;
+transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+box-shadow: 0 8px 32px rgba(255,183,197,0.5);
+white-space: nowrap;
+}
+
+.import-toast.show { transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 600px) {
+.header { flex-direction: column; gap: 16px; }
+.stats { grid-template-columns: repeat(3, 1fr); }
+.patient-card { grid-template-columns: auto 1fr; }
+.patient-right { display: none; }
+.form-row { grid-template-columns: 1fr; }
+.treatment-item { grid-template-columns: 1fr 1fr; }
+.modal { padding: 20px; }
+}
+
+/* ===== TABS ===== */
+.tab-bar {
+display: flex;
+gap: 8px;
+margin-bottom: 24px;
+background: rgba(255,255,255,0.8);
+border: 1.5px solid var(–border);
+border-radius: 18px;
+padding: 6px;
+backdrop-filter: blur(8px);
+box-shadow: 0 4px 16px var(–shadow);
+}
+.tab-btn {
+flex: 1;
+padding: 10px 8px;
+border: none;
+border-radius: 12px;
+background: transparent;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+font-weight: 600;
+color: var(–text-light);
+cursor: pointer;
+transition: all 0.25s;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 6px;
+}
+.tab-btn.active {
+background: linear-gradient(135deg, var(–rose), var(–deep-rose));
+color: white;
+box-shadow: 0 4px 12px rgba(255,183,197,0.4);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== CALENDAR ===== */
+.cal-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 16px;
+}
+.cal-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 20px;
+color: var(–text);
+}
+.cal-nav {
+width: 36px; height: 36px;
+border-radius: 50%;
+border: 1.5px solid var(–border);
+background: white;
+cursor: pointer;
+font-size: 16px;
+display: flex; align-items: center; justify-content: center;
+color: var(–text-light);
+transition: all 0.2s;
+}
+.cal-nav:hover { border-color: var(–rose); color: var(–deep-rose); }
+.cal-grid {
+display: grid;
+grid-template-columns: repeat(7, 1fr);
+gap: 4px;
+margin-bottom: 20px;
+}
+.cal-day-label {
+text-align: center;
+font-size: 11px;
+font-weight: 700;
+color: var(–text-light);
+padding: 6px 0;
+letter-spacing: 0.5px;
+}
+.cal-day {
+aspect-ratio: 1;
+border-radius: 10px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: all 0.2s;
+font-size: 13px;
+color: var(–text);
+position: relative;
+border: 1.5px solid transparent;
+background: transparent;
+}
+.cal-day:hover { background: rgba(255,183,197,0.15); }
+.cal-day.other-month { color: #ccc; }
+.cal-day.today {
+background: rgba(255,183,197,0.2);
+border-color: var(–rose);
+font-weight: 700;
+color: var(–deep-rose);
+}
+.cal-day.selected {
+background: linear-gradient(135deg, var(–rose), var(–deep-rose));
+color: white;
+font-weight: 700;
+border-color: transparent;
+box-shadow: 0 4px 12px rgba(255,183,197,0.5);
+}
+.cal-day.has-appt::after {
+content: ‘’;
+position: absolute;
+bottom: 3px;
+width: 5px; height: 5px;
+border-radius: 50%;
+background: var(–deep-rose);
+}
+.cal-day.selected.has-appt::after { background: white; }
+
+/* ===== APPOINTMENT LIST ===== */
+.appt-day-header {
+font-family: ‘Playfair Display’, serif;
+font-size: 18px;
+color: var(–text);
+margin-bottom: 14px;
+padding-bottom: 10px;
+border-bottom: 1.5px solid var(–border);
+}
+.appt-card {
+background: rgba(255,255,255,0.85);
+border: 1.5px solid var(–border);
+border-radius: 16px;
+padding: 16px 18px;
+margin-bottom: 12px;
+display: grid;
+grid-template-columns: auto 1fr auto;
+gap: 14px;
+align-items: center;
+backdrop-filter: blur(8px);
+box-shadow: 0 4px 12px var(–shadow);
+animation: fadeIn 0.3s ease;
+transition: all 0.2s;
+}
+.appt-card:hover { transform: translateY(-2px); border-color: var(–rose); }
+.appt-time {
+background: linear-gradient(135deg, var(–blush), var(–rose));
+border-radius: 10px;
+padding: 8px 12px;
+text-align: center;
+min-width: 58px;
+}
+.appt-time .time-val {
+font-family: ‘Playfair Display’, serif;
+font-size: 16px;
+color: var(–text);
+font-weight: 700;
+}
+.appt-info h4 {
+font-size: 15px;
+font-weight: 600;
+color: var(–text);
+margin-bottom: 3px;
+}
+.appt-info .appt-meta {
+font-size: 12px;
+color: var(–text-light);
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+.appt-empty {
+text-align: center;
+padding: 40px 20px;
+color: var(–text-light);
+}
+.appt-empty .emoji { font-size: 40px; margin-bottom: 12px; }
+.btn-add-appt {
+background: linear-gradient(135deg, var(–mint), #a8e6b0);
+color: #2d6e38;
+border: none;
+padding: 12px 24px;
+border-radius: 50px;
+font-family: ‘Sarabun’, sans-serif;
+font-size: 14px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+box-shadow: 0 4px 12px rgba(213,243,216,0.5);
+display: flex;
+align-items: center;
+gap: 8px;
+margin-bottom: 20px;
+width: 100%;
+justify-content: center;
+}
+.btn-add-appt:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(213,243,216,0.6); }
+
+</style>
+</head>
+<body>
+
+<!-- Falling petals -->
+
+<div class="petals" id="petals"></div>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <span class="logo-flower">🌸</span>
+      <h1>Cherry Blossom Clinic
+        <span>ระบบจัดการข้อมูลผู้ป่วย</span>
+      </h1>
+    </div>
+    <button class="btn-add" onclick="window._openModal()">
+      <span>＋</span> เพิ่มผู้ป่วย
+    </button>
+  </div>
+
+  <!-- Tab bar -->
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-patients" onclick="window._switchTab('patients')">🌸 ผู้ป่วย</button>
+    <button class="tab-btn" id="tab-appointments" onclick="window._switchTab('appointments')">📅 นัดหมาย</button>
+  </div>
+
+  <!-- PATIENTS TAB -->
+
+  <div class="tab-content active" id="content-patients">
+
+  <!-- Stats -->
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num" id="stat-total">0</div>
+      <div class="label">ผู้ป่วยทั้งหมด</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-thai">0</div>
+      <div class="label">ผู้ป่วยไทย</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" id="stat-int">0</div>
+      <div class="label">ต่างชาติ</div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="ค้นหา ชื่อ นามสกุล หรือเบอร์โทร..." oninput="filterPatients()">
+    </div>
+    <button class="filter-btn active" id="filter-all" onclick="setFilter('all')">ทั้งหมด</button>
+    <button class="filter-btn" id="filter-th" onclick="setFilter('TH')">คนไทย</button>
+    <button class="filter-btn" id="filter-int" onclick="setFilter('INT')">ต่างชาติ</button>
+    <label class="upload-btn">
+      <span>📊</span> นำเข้า Excel
+      <input type="file" accept=".xlsx,.xls" style="display:none" onchange="importFromXLSX(this)">
+    </label>
+  </div>
+
+  <!-- Patient list -->
+
+  <div class="patient-grid" id="patientList"></div>
+</div>
+
+  </div><!-- end patients tab -->
+
+  <!-- APPOINTMENTS TAB -->
+
+  <div class="tab-content" id="content-appointments">
+    <button class="btn-add-appt" onclick="window._openApptModal()">＋ เพิ่มนัดหมาย</button>
+
+```
+<!-- Calendar -->
+<div style="background:rgba(255,255,255,0.85);border:1.5px solid var(--border);border-radius:20px;padding:20px;backdrop-filter:blur(8px);box-shadow:0 4px 16px var(--shadow);margin-bottom:20px;">
+  <div class="cal-header">
+    <button class="cal-nav" onclick="window._calPrev()">‹</button>
+    <div class="cal-title" id="calTitle"></div>
+    <button class="cal-nav" onclick="window._calNext()">›</button>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+</div>
+
+<!-- Day appointment list -->
+<div id="apptDayList"></div>
+```
+
+  </div><!-- end appointments tab -->
+
+<!-- Add/Edit Modal -->
+
+<div class="modal-overlay" id="addModal" style="display:none" onclick="window._clickOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">🌸 เพิ่มผู้ป่วยใหม่</h2>
+      <button class="close-btn" onclick="window._closeModal()">✕</button>
+    </div>
+
+```
+<!-- Nationality toggle -->
+<div class="nationality-toggle">
+  <button class="nat-btn active" id="nat-th" onclick="window._setNat('TH')">🇹🇭 คนไทย</button>
+  <button class="nat-btn" id="nat-int" onclick="window._setNat('INT')">🌍 ต่างชาติ</button>
+</div>
+
+<!-- Basic info -->
+<div class="form-section">
+  <div class="section-title">ข้อมูลส่วนตัว</div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>ชื่อ / First Name</label>
+      <input type="text" id="f-firstName" placeholder="ชื่อ">
+    </div>
+    <div class="form-group">
+      <label>นามสกุล / Last Name</label>
+      <input type="text" id="f-lastName" placeholder="นามสกุล">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>อายุ / Age</label>
+      <input type="number" id="f-age" placeholder="อายุ (ปี)" min="0" max="150">
+    </div>
+    <div class="form-group">
+      <label>วันเกิด / Date of Birth</label>
+      <input type="date" id="f-dob">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>เบอร์โทรศัพท์ / Phone</label>
+      <input type="tel" id="f-phone" placeholder="0xx-xxx-xxxx">
+    </div>
+    <div class="form-group" id="id-group">
+      <label id="id-label">เลขบัตรประชาชน</label>
+      <input type="text" id="f-patientId" placeholder="x-xxxx-xxxxx-xx-x">
+    </div>
+  </div>
+</div>
+
+<!-- Treatments -->
+<div class="form-section">
+  <div class="section-title">รายการหัตถการ</div>
+  <div class="treatment-list" id="treatmentList"></div>
+  <button class="btn-add-treatment" onclick="window._addTreatment()">＋ เพิ่มรายการหัตถการ</button>
+</div>
+
+<div class="modal-footer">
+  <button class="btn-cancel" onclick="window._closeModal()">ยกเลิก</button>
+  <button class="btn-save" onclick="window._savePatient()">💾 บันทึกข้อมูล</button>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- Detail Modal -->
+
+<div class="modal-overlay" id="detailModal" style="display:none" onclick="window._clickDetailOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="detailName">ข้อมูลผู้ป่วย</h2>
+      <button class="close-btn" onclick="window._closeDetail()">✕</button>
+    </div>
+    <div id="detailContent"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="window._closeDetail()">ปิด</button>
+      <button class="btn-save" onclick="window._editCurrentPatient()">✏️ แก้ไข</button>
+    </div>
+  </div>
+</div>
+
+<!-- Appointment Modal -->
+
+<div class="modal-overlay" id="apptModal" style="display:none" onclick="window._clickApptOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="apptModalTitle">📅 เพิ่มนัดหมาย</h2>
+      <button class="close-btn" onclick="window._closeApptModal()">✕</button>
+    </div>
+    <div class="form-section">
+      <div class="section-title">ข้อมูลนัดหมาย</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ชื่อผู้ป่วย</label>
+          <input type="text" id="a-name" placeholder="ชื่อ-นามสกุล" list="patientSuggestions">
+          <datalist id="patientSuggestions"></datalist>
+        </div>
+        <div class="form-group">
+          <label>เบอร์ติดต่อ</label>
+          <input type="tel" id="a-phone" placeholder="0xx-xxx-xxxx">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>วันที่นัด</label>
+          <input type="date" id="a-date">
+        </div>
+        <div class="form-group">
+          <label>เวลานัด</label>
+          <input type="time" id="a-time">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>หัตถการที่นัด</label>
+          <input type="text" id="a-treatment" placeholder="เช่น โบทอกซ์ ฟิลเลอร์ เลเซอร์">
+        </div>
+      </div>
+      <div class="form-row single">
+        <div class="form-group">
+          <label>หมายเหตุ / โน้ต</label>
+          <input type="text" id="a-note" placeholder="หมายเหตุเพิ่มเติม">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="window._closeApptModal()">ยกเลิก</button>
+      <button class="btn-save" onclick="window._saveAppt()">💾 บันทึกนัดหมาย</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+
+<div class="import-toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const app = initializeApp({
+  apiKey: "AIzaSyDTkbgnDaVOiLE2PrTZzqcuo9L3JnELwNM",
+  authDomain: "neverland-clinic.firebaseapp.com",
+  projectId: "neverland-clinic",
+  storageBucket: "neverland-clinic.firebasestorage.app",
+  messagingSenderId: "277133652399",
+  appId: "1:277133652399:web:be32caaac948da356aff5a"
+});
+const db = getFirestore(app);
+const patientsCol = collection(db, 'patients');
+
+// Real-time sync — updates UI automatically on all devices
+onSnapshot(patientsCol, (snapshot) => {
+  patients = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  updateStats();
+  renderList();
+  setSyncStatus('🟢 Sync แล้ว');
+}, (err) => {
+  setSyncStatus('🔴 ไม่สามารถเชื่อมต่อได้');
+});
+
+async function fbSave(patient) {
+  setSyncStatus('🔄 กำลัง sync...');
+  try {
+    await setDoc(doc(db, 'patients', String(patient.id)), patient);
+  } catch(e) { showToast('❌ บันทึกไม่สำเร็จ: ' + e.message); }
+}
+
+async function fbDelete(id) {
+  setSyncStatus('🔄 กำลัง sync...');
+  try {
+    await deleteDoc(doc(db, 'patients', String(id)));
+  } catch(e) { showToast('❌ ลบไม่สำเร็จ: ' + e.message); }
+}
+
+function setSyncStatus(msg) {
+  let el = document.getElementById('syncStatus');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'syncStatus';
+    el.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);border:1.5px solid #f0d8db;border-radius:50px;padding:6px 18px;font-size:12px;color:#8a6a70;z-index:50;box-shadow:0 4px 12px rgba(242,199,199,0.4);pointer-events:none;transition:all 0.3s';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+}
+
+// ===== App State =====
+let patients = [];
+let currentNat = 'TH';
+let currentFilter = 'all';
+let editingId = null;
+let viewingId = null;
+let treatments = [];
+
+// Petals
+const petalsEl = document.getElementById('petals');
+for (let i = 0; i < 18; i++) {
+  const p = document.createElement('div');
+  p.className = 'petal';
+  p.style.cssText = `left:${Math.random()*100}%;animation-duration:${4+Math.random()*8}s;animation-delay:${Math.random()*10}s;transform:rotate(${Math.random()*360}deg)`;
+  petalsEl.appendChild(p);
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = patients.length;
+  document.getElementById('stat-thai').textContent = patients.filter(p => p.nat === 'TH').length;
+  document.getElementById('stat-int').textContent = patients.filter(p => p.nat === 'INT').length;
+}
+
+function getFiltered(filter) {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  return patients.filter(p => {
+    const matchFilter = filter === 'all' || p.nat === filter;
+    const full = `${p.firstName} ${p.lastName} ${p.phone}`.toLowerCase();
+    return (filter === 'all' ? true : matchFilter) && (!q || full.includes(q));
+  }).filter(p => filter === 'all' || p.nat === filter || filter === 'all');
+}
+
+function getFilteredFull() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  return patients.filter(p => {
+    const matchFilter = currentFilter === 'all' || p.nat === currentFilter;
+    const full = `${p.firstName} ${p.lastName} ${p.phone}`.toLowerCase();
+    return matchFilter && (!q || full.includes(q));
+  });
+}
+
+window.filterPatients = function() { renderList(); };
+
+window.setFilter = function(f) {
+  currentFilter = f;
+  document.getElementById('filter-all').classList.toggle('active', f === 'all');
+  document.getElementById('filter-th').classList.toggle('active', f === 'TH');
+  document.getElementById('filter-int').classList.toggle('active', f === 'INT');
+  renderList();
+};
+
+function renderList() {
+  const list = getFilteredFull();
+  const el = document.getElementById('patientList');
+  if (list.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">🌸</div><p>ไม่พบข้อมูลผู้ป่วย</p></div>`;
+    return;
+  }
+  el.innerHTML = list.map((p, i) => {
+    const initials = ((p.firstName||'?')[0] + (p.lastName||'?')[0]).toUpperCase();
+    const lastDate = p.treatments && p.treatments.length > 0 ? p.treatments[p.treatments.length-1].date || '-' : '-';
+    return `
+    <div class="patient-card" style="animation-delay:${i*0.05}s" onclick="window._viewPatient('${p.id}')">
+      <div class="avatar">${initials}</div>
+      <div class="patient-info">
+        <h3>${p.firstName} ${p.lastName}
+          <span class="badge badge-${p.nat === 'TH' ? 'th' : 'int'}" style="margin-left:8px;font-size:11px">
+            ${p.nat === 'TH' ? '🇹🇭 ไทย' : '🌍 Int\'l'}
+          </span>
+        </h3>
+        <div class="meta">
+          <span>📞 ${p.phone || '-'}</span>
+          <span>🎂 ${p.age || '-'} ปี</span>
+          <span>🪪 ${p.patientId || '-'}</span>
+        </div>
+      </div>
+      <div class="patient-right">
+        <div class="treatment-count">${(p.treatments||[]).length}</div>
+        <div class="treatment-label">หัตถการ</div>
+        <div class="last-visit" style="margin-top:4px">ล่าสุด: ${lastDate}</div>
+      </div>
+      <div class="card-actions" onclick="event.stopPropagation()">
+        <button class="icon-btn" onclick="window._openEdit('${p.id}')" title="แก้ไข">✏️</button>
+        <button class="icon-btn delete" onclick="window._deletePatient('${p.id}')" title="ลบ">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window._openModal = function(id) {
+  editingId = id || null;
+  treatments = [];
+  document.getElementById('treatmentList').innerHTML = '';
+  if (editingId) {
+    const p = patients.find(x => x.id === editingId);
+    if (!p) return;
+    document.getElementById('modalTitle').textContent = '✏️ แก้ไขข้อมูลผู้ป่วย';
+    document.getElementById('f-firstName').value = p.firstName || '';
+    document.getElementById('f-lastName').value = p.lastName || '';
+    document.getElementById('f-age').value = p.age || '';
+    document.getElementById('f-dob').value = p.dob || '';
+    document.getElementById('f-phone').value = p.phone || '';
+    document.getElementById('f-patientId').value = p.patientId || '';
+    window._setNat(p.nat || 'TH');
+    treatments = JSON.parse(JSON.stringify(p.treatments || []));
+    treatments.forEach((t, i) => renderTreatmentRow(i, t));
+  } else {
+    document.getElementById('modalTitle').textContent = '🌸 เพิ่มผู้ป่วยใหม่';
+    ['f-firstName','f-lastName','f-age','f-dob','f-phone','f-patientId'].forEach(id => document.getElementById(id).value = '');
+    window._setNat('TH');
+  }
+  document.getElementById('addModal').style.display = 'flex';
+};
+window._openEdit = (id) => window._openModal(id);
+
+window._closeModal = function() {
+  document.getElementById('addModal').style.display = 'none';
+  editingId = null; treatments = [];
+};
+
+window._clickOverlay = function(e) {
+  if (e.target === document.getElementById('addModal')) window._closeModal();
+};
+
+window._setNat = function(nat) {
+  currentNat = nat;
+  document.getElementById('nat-th').classList.toggle('active', nat === 'TH');
+  document.getElementById('nat-int').classList.toggle('active', nat === 'INT');
+  document.getElementById('id-label').textContent = nat === 'TH' ? 'เลขบัตรประชาชน' : 'Passport / ID Number';
+  document.getElementById('f-patientId').placeholder = nat === 'TH' ? 'x-xxxx-xxxxx-xx-x' : 'Passport No.';
+};
+
+window._addTreatment = function() {
+  const idx = treatments.length;
+  treatments.push({ name:'', date:'', price:'' });
+  renderTreatmentRow(idx, treatments[idx]);
+};
+
+function renderTreatmentRow(idx, t) {
+  const container = document.getElementById('treatmentList');
+  const div = document.createElement('div');
+  div.className = 'treatment-item';
+  div.id = `tr-${idx}`;
+  div.innerHTML = `
+    <input type="text" placeholder="ชื่อหัตถการ" value="${t.name||''}" oninput="window._updateTreatment(${idx},'name',this.value)">
+    <input type="date" value="${t.date||''}" oninput="window._updateTreatment(${idx},'date',this.value)">
+    <input type="number" placeholder="ราคา (฿)" value="${t.price||''}" oninput="window._updateTreatment(${idx},'price',this.value)" min="0">
+    <button class="remove-treatment" onclick="window._removeTreatment(${idx})">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+window._updateTreatment = (idx, field, val) => { if (treatments[idx]) treatments[idx][field] = val; };
+window._removeTreatment = function(idx) {
+  treatments.splice(idx, 1);
+  document.getElementById('treatmentList').innerHTML = '';
+  treatments.forEach((t, i) => renderTreatmentRow(i, t));
+};
+
+window._savePatient = async function() {
+  const fn = document.getElementById('f-firstName').value.trim();
+  const ln = document.getElementById('f-lastName').value.trim();
+  if (!fn || !ln) { showToast('⚠️ กรุณากรอกชื่อและนามสกุล'); return; }
+  const data = {
+    id: editingId || Date.now().toString(),
+    nat: currentNat,
+    firstName: fn, lastName: ln,
+    age: document.getElementById('f-age').value,
+    dob: document.getElementById('f-dob').value,
+    phone: document.getElementById('f-phone').value.trim(),
+    patientId: document.getElementById('f-patientId').value.trim(),
+    treatments: [...treatments]
+  };
+  await fbSave(data);
+  window._closeModal();
+  showToast(editingId ? '✅ แก้ไขเรียบร้อย' : '🌸 เพิ่มผู้ป่วยเรียบร้อย');
+};
+
+window._deletePatient = async function(id) {
+  if (!confirm('ต้องการลบข้อมูลผู้ป่วยนี้?')) return;
+  if (viewingId === id) window._closeDetail();
+  await fbDelete(id);
+  showToast('🗑️ ลบข้อมูลเรียบร้อย');
+};
+
+window._viewPatient = function(id) {
+  viewingId = id;
+  const p = patients.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('detailName').textContent = `${p.firstName} ${p.lastName}`;
+  const totalAmt = (p.treatments||[]).reduce((s,t) => s + (parseFloat(t.price)||0), 0);
+  const dobFormatted = p.dob ? new Date(p.dob).toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'}) : '-';
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-section">
+      <div class="section-title">ข้อมูลส่วนตัว</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="key">สัญชาติ</div><div class="val">${p.nat === 'TH' ? '🇹🇭 คนไทย' : '🌍 ต่างชาติ'}</div></div>
+        <div class="detail-item"><div class="key">อายุ</div><div class="val">${p.age ? p.age + ' ปี' : '-'}</div></div>
+        <div class="detail-item"><div class="key">วันเกิด</div><div class="val">${dobFormatted}</div></div>
+        <div class="detail-item"><div class="key">เบอร์โทร</div><div class="val">${p.phone || '-'}</div></div>
+        <div class="detail-item" style="grid-column:1/-1"><div class="key">${p.nat === 'TH' ? 'เลขบัตรประชาชน' : 'Passport / ID'}</div><div class="val">${p.patientId || '-'}</div></div>
+      </div>
+    </div>
+    <div class="detail-section">
+      <div class="section-title">รายการหัตถการ (${(p.treatments||[]).length} รายการ)</div>
+      ${(p.treatments||[]).length > 0 ? `
+      <table class="treatment-table">
+        <thead><tr><th>หัตถการ</th><th>วันที่</th><th style="text-align:right">ราคา</th></tr></thead>
+        <tbody>${(p.treatments||[]).map(t => `
+          <tr><td>${t.name||'-'}</td><td>${t.date ? new Date(t.date).toLocaleDateString('th-TH') : '-'}</td><td style="text-align:right">${t.price ? parseFloat(t.price).toLocaleString()+' ฿' : '-'}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="total-row"><span>รวมทั้งสิ้น</span><span style="color:var(--deep-rose)">${totalAmt.toLocaleString()} ฿</span></div>`
+      : '<p style="color:var(--text-light);font-size:14px;padding:12px 0">ยังไม่มีรายการหัตถการ</p>'}
+    </div>`;
+  document.getElementById('detailModal').style.display = 'flex';
+};
+
+window._closeDetail = function() {
+  document.getElementById('detailModal').style.display = 'none';
+  viewingId = null;
+};
+window._clickDetailOverlay = function(e) {
+  if (e.target === document.getElementById('detailModal')) window._closeDetail();
+};
+window._editCurrentPatient = function() {
+  if (!viewingId) return;
+  window._closeDetail();
+  window._openModal(viewingId);
+};
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// XLSX Import
+window.importFromXLSX = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    showToast('📊 กำลังประมวลผล Excel...');
+    if (typeof XLSX === 'undefined') {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      script.onload = () => processXLSX(e.target.result);
+      document.head.appendChild(script);
+    } else { processXLSX(e.target.result); }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = '';
+};
+
+function processXLSX(buffer) {
+  try {
+    const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    if (!rows || rows.length === 0) { showToast('⚠️ ไม่พบข้อมูล'); return; }
+    showMappingModal(rows);
+  } catch(err) { showToast('❌ เกิดข้อผิดพลาด'); }
+}
+
+function showMappingModal(rows) {
+  const cols = Object.keys(rows[0]);
+  const colOptions = `<option value="">-- ไม่ใช้ --</option>` + cols.map(c => `<option value="${c}">${c}</option>`).join('');
+  const detect = (kw) => cols.find(c => kw.some(k => c.toLowerCase().includes(k.toLowerCase()))) || '';
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'mappingOverlay';
+  overlay.style.zIndex = '200';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:520px">
+      <div class="modal-header">
+        <h2>📊 จับคู่คอลัมน์ Excel</h2>
+        <button class="close-btn" onclick="document.getElementById('mappingOverlay').remove()">✕</button>
+      </div>
+      <p style="font-size:13px;color:var(--text-light);margin-bottom:16px">พบ <strong style="color:var(--deep-rose)">${rows.length} แถว</strong></p>
+      <div class="form-row"><div class="form-group"><label>ชื่อ</label><select id="m-fn">${colOptions}</select></div>
+      <div class="form-group"><label>นามสกุล</label><select id="m-ln">${colOptions}</select></div></div>
+      <div class="form-row"><div class="form-group"><label>อายุ</label><select id="m-age">${colOptions}</select></div>
+      <div class="form-group"><label>วันเกิด</label><select id="m-dob">${colOptions}</select></div></div>
+      <div class="form-row"><div class="form-group"><label>เบอร์โทร</label><select id="m-phone">${colOptions}</select></div>
+      <div class="form-group"><label>เลขบัตร/Passport</label><select id="m-id">${colOptions}</select></div></div>
+      <div class="form-row"><div class="form-group"><label>สัญชาติ</label><select id="m-nat">${colOptions}</select></div>
+      <div class="form-group"><label>ค่าเริ่มต้น</label><select id="m-nat-default"><option value="TH">🇹🇭 ไทย</option><option value="INT">🌍 ต่างชาติ</option></select></div></div>
+      <div class="section-title" style="margin-top:16px">หัตถการ</div>
+      <div class="form-row"><div class="form-group"><label>ชื่อหัตถการ</label><select id="m-tname">${colOptions}</select></div>
+      <div class="form-group"><label>วันที่</label><select id="m-tdate">${colOptions}</select></div></div>
+      <div class="form-row single"><div class="form-group"><label>ราคา</label><select id="m-tprice">${colOptions}</select></div></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="document.getElementById('mappingOverlay').remove()">ยกเลิก</button>
+        <button class="btn-save" onclick="window._doImport(${JSON.stringify(rows).replace(/"/g,'&quot;')})">🌸 นำเข้า</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const sv = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  sv('m-fn', detect(['ชื่อ','firstname','fname'])); sv('m-ln', detect(['นามสกุล','lastname','lname']));
+  sv('m-age', detect(['อายุ','age'])); sv('m-dob', detect(['วันเกิด','dob','birth']));
+  sv('m-phone', detect(['เบอร์','โทร','phone','tel'])); sv('m-id', detect(['บัตร','id','passport','hn']));
+}
+
+window._doImport = async function(rows) {
+  const g = id => document.getElementById(id)?.value || '';
+  const map = { fn:g('m-fn'), ln:g('m-ln'), age:g('m-age'), dob:g('m-dob'), phone:g('m-phone'), id:g('m-id'), nat:g('m-nat'), natDefault:g('m-nat-default'), tname:g('m-tname'), tdate:g('m-tdate'), tprice:g('m-tprice') };
+  if (!map.fn && !map.ln) { showToast('⚠️ กรุณาเลือกคอลัมน์ชื่อ'); return; }
+  const patientMap = {};
+  rows.forEach(row => {
+    const fn = String(row[map.fn]||'').trim();
+    const ln = String(row[map.ln]||'').trim();
+    if (!fn && !ln) return;
+    const key = `${fn}|${ln}`;
+    if (!patientMap[key]) {
+      let nat = map.nat ? String(row[map.nat]||'').toUpperCase() : map.natDefault;
+      if (nat.includes('ไทย') || nat === 'TH') nat = 'TH'; else if (nat) nat = 'INT'; else nat = map.natDefault;
+      let dob = '';
+      if (map.dob && row[map.dob]) { const d = row[map.dob]; dob = d instanceof Date ? d.toISOString().split('T')[0] : (new Date(d).toISOString().split('T')[0] || ''); }
+      patientMap[key] = { id: Date.now().toString()+Math.random(), nat, firstName:fn, lastName:ln, age:map.age?String(row[map.age]||''):'', dob, phone:map.phone?String(row[map.phone]||''):'', patientId:map.id?String(row[map.id]||''):'', treatments:[] };
+    }
+    if (map.tname && row[map.tname]) {
+      let tdate = '';
+      if (map.tdate && row[map.tdate]) { const d = row[map.tdate]; tdate = d instanceof Date ? d.toISOString().split('T')[0] : ''; }
+      patientMap[key].treatments.push({ name:String(row[map.tname]||''), date:tdate, price:map.tprice?String(row[map.tprice]||'').replace(/[^0-9.]/g,''):'' });
+    }
+  });
+  const newPts = Object.values(patientMap);
+  document.getElementById('mappingOverlay').remove();
+  for (const p of newPts) await fbSave(p);
+  showToast(`🌸 นำเข้าผู้ป่วย ${newPts.length} ราย`);
+};
+
+
+// ===== TABS =====
+window._switchTab = function(tab) {
+  ['patients','appointments'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t === tab);
+    document.getElementById('content-'+t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'appointments') renderCalendar();
+};
+
+// ===== APPOINTMENTS =====
+let appointments = [];
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let selectedDate = new Date().toISOString().split('T')[0];
+let editingApptId = null;
+
+const apptsCol = collection(db, 'appointments');
+onSnapshot(apptsCol, (snapshot) => {
+  appointments = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderCalendar();
+  renderDayList(selectedDate);
+});
+
+async function fbSaveAppt(appt) {
+  await setDoc(doc(db, 'appointments', String(appt.id)), appt);
+}
+async function fbDeleteAppt(id) {
+  await deleteDoc(doc(db, 'appointments', String(id)));
+}
+
+// Calendar
+window._calPrev = function() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+};
+window._calNext = function() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+};
+
+function renderCalendar() {
+  const monthNames = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+  document.getElementById('calTitle').textContent = `${monthNames[calMonth]} ${calYear + 543}`;
+
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+
+  const dayLabels = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+  const today = new Date().toISOString().split('T')[0];
+
+  // Get appt dates for this month
+  const apptDates = new Set(appointments.map(a => a.date));
+
+  let html = dayLabels.map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevDays = new Date(calYear, calMonth, 0).getDate();
+
+  // Prev month days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = prevDays - i;
+    const dateStr = `${calYear}-${String(calMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += `<div class="cal-day other-month${apptDates.has(dateStr) ? ' has-appt' : ''}" onclick="window._selectDate('${dateStr}')">${d}</div>`;
+  }
+
+  // This month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr === today;
+    const isSelected = dateStr === selectedDate;
+    const hasAppt = apptDates.has(dateStr);
+    html += `<div class="cal-day${isToday ? ' today' : ''}${isSelected ? ' selected' : ''}${hasAppt ? ' has-appt' : ''}" onclick="window._selectDate('${dateStr}')">${d}</div>`;
+  }
+
+  // Next month
+  const totalCells = firstDay + daysInMonth;
+  const nextDays = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let d = 1; d <= nextDays; d++) {
+    const dateStr = `${calYear}-${String(calMonth+2).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += `<div class="cal-day other-month${apptDates.has(dateStr) ? ' has-appt' : ''}" onclick="window._selectDate('${dateStr}')">${d}</div>`;
+  }
+
+  grid.innerHTML = html;
+  renderDayList(selectedDate);
+}
+
+window._selectDate = function(dateStr) {
+  selectedDate = dateStr;
+  renderCalendar();
+};
+
+function renderDayList(dateStr) {
+  const el = document.getElementById('apptDayList');
+  if (!el) return;
+
+  const dayAppts = appointments.filter(a => a.date === dateStr).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+
+  const d = new Date(dateStr);
+  const thaiDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+  const thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const dateLabel = `วัน${thaiDays[d.getDay()]}ที่ ${d.getDate()} ${thaiMonths[d.getMonth()]} ${d.getFullYear()+543}`;
+
+  if (dayAppts.length === 0) {
+    el.innerHTML = `
+      <div class="appt-day-header">${dateLabel}</div>
+      <div class="appt-empty"><div class="emoji">🌸</div><p>ไม่มีนัดหมายวันนี้</p></div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="appt-day-header">${dateLabel} <span style="font-size:14px;color:var(--deep-rose);font-family:'Sarabun',sans-serif">(${dayAppts.length} นัด)</span></div>` +
+    dayAppts.map(a => `
+    <div class="appt-card">
+      <div class="appt-time"><div class="time-val">${a.time || '--:--'}</div></div>
+      <div class="appt-info">
+        <h4>${a.name || '-'}</h4>
+        <div class="appt-meta">
+          ${a.phone ? `<span>📞 ${a.phone}</span>` : ''}
+          ${a.treatment ? `<span>💉 ${a.treatment}</span>` : ''}
+          ${a.note ? `<span>📝 ${a.note}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn" onclick="window._editAppt('${a.id}')">✏️</button>
+        <button class="icon-btn delete" onclick="window._deleteAppt('${a.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+window._openApptModal = function(id) {
+  editingApptId = id || null;
+  const today = new Date().toISOString().split('T')[0];
+
+  if (editingApptId) {
+    const a = appointments.find(x => x.id === editingApptId);
+    if (!a) return;
+    document.getElementById('apptModalTitle').textContent = '✏️ แก้ไขนัดหมาย';
+    document.getElementById('a-name').value = a.name || '';
+    document.getElementById('a-phone').value = a.phone || '';
+    document.getElementById('a-date').value = a.date || today;
+    document.getElementById('a-time').value = a.time || '';
+    document.getElementById('a-treatment').value = a.treatment || '';
+    document.getElementById('a-note').value = a.note || '';
+  } else {
+    document.getElementById('apptModalTitle').textContent = '📅 เพิ่มนัดหมาย';
+    document.getElementById('a-name').value = '';
+    document.getElementById('a-phone').value = '';
+    document.getElementById('a-date').value = selectedDate || today;
+    document.getElementById('a-time').value = '';
+    document.getElementById('a-treatment').value = '';
+    document.getElementById('a-note').value = '';
+  }
+
+  // Fill patient suggestions
+  const dl = document.getElementById('patientSuggestions');
+  dl.innerHTML = patients.map(p => `<option value="${p.firstName} ${p.lastName}">${p.firstName} ${p.lastName} (${p.phone||''})</option>`).join('');
+
+  document.getElementById('apptModal').style.display = 'flex';
+};
+
+window._editAppt = function(id) { window._openApptModal(id); };
+
+window._closeApptModal = function() {
+  document.getElementById('apptModal').style.display = 'none';
+  editingApptId = null;
+};
+
+window._clickApptOverlay = function(e) {
+  if (e.target === document.getElementById('apptModal')) window._closeApptModal();
+};
+
+window._saveAppt = async function() {
+  const name = document.getElementById('a-name').value.trim();
+  const date = document.getElementById('a-date').value;
+  if (!name || !date) { showToast('⚠️ กรุณากรอกชื่อและวันที่'); return; }
+
+  // Auto-fill phone from patient list
+  let phone = document.getElementById('a-phone').value.trim();
+  if (!phone) {
+    const matched = patients.find(p => `${p.firstName} ${p.lastName}` === name);
+    if (matched) phone = matched.phone || '';
+  }
+
+  const data = {
+    id: editingApptId || Date.now().toString(),
+    name, phone, date,
+    time: document.getElementById('a-time').value,
+    treatment: document.getElementById('a-treatment').value.trim(),
+    note: document.getElementById('a-note').value.trim()
+  };
+
+  await fbSaveAppt(data);
+  window._closeApptModal();
+  showToast(editingApptId ? '✅ แก้ไขนัดหมายเรียบร้อย' : '📅 บันทึกนัดหมายแล้ว');
+};
+
+window._deleteAppt = async function(id) {
+  if (!confirm('ต้องการลบนัดหมายนี้?')) return;
+  await fbDeleteAppt(id);
+  showToast('🗑️ ลบนัดหมายเรียบร้อย');
+};
+
+// Init calendar on load
+renderCalendar();
+
+setSyncStatus('🔄 กำลังเชื่อมต่อ...');
+</script>
+
+</body>
+</html>
